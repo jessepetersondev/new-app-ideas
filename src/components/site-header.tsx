@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Bot } from "lucide-react";
+import { Bot, Calculator } from "lucide-react";
 import { UserProfile } from "@/components/auth/user-profile";
+import { Button } from "./ui/button";
 import { ModeToggle } from "./ui/mode-toggle";
 
 export function SiteHeader() {
@@ -35,7 +36,26 @@ export function SiteHeader() {
               </span>
             </Link>
           </h1>
+
+          {/* Navigation Links */}
+          <div className="hidden md:flex items-center gap-6">
+            <Button variant="ghost" asChild>
+              <Link href="/counter" className="flex items-center gap-2">
+                <Calculator className="h-4 w-4" />
+                Counter
+              </Link>
+            </Button>
+          </div>
+
           <div className="flex items-center gap-4" role="group" aria-label="User actions">
+            {/* Mobile Counter Link */}
+            <div className="md:hidden">
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/counter">
+                  <Calculator className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
             <UserProfile />
             <ModeToggle />
           </div>

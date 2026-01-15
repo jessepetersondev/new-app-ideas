@@ -1,0 +1,188 @@
+You are an implementation agent. BUILD THE COMPLETE APPLICATION.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - continue until done
+3. IMPLEMENT EVERYTHING in the plan
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Create all files and implement all features.
+
+PROJECT: /home/ai/agent-apps/counter-app-556
+
+PLAN:
+# Counter App Implementation Plan
+
+## 📋 Executive Summary
+We will implement a simple Counter App with increment, decrement, and reset functionality using the existing Next.js 16 project structure. The app will leverage shadcn/ui components, Tailwind CSS, and follow the project's established patterns.
+
+## 🔍 Requirements Analysis
+### Functional Requirements
+- Display a number starting at 0
+- Increment button to increase the counter
+- Decrement button to decrease the counter
+- Reset button to return to 0
+- Visually appealing and responsive design
+- Support for dark/light mode
+
+### Non-Functional Requirements
+- Use existing project UI components
+- Follow Tailwind CSS styling
+- Implement with TypeScript
+- Responsive design
+- Accessible button interactions
+
+## 🏗️ System Architecture
+### State Management
+- Use React `useState` for local state management
+- No need for global state (Redux/Context) due to simplicity
+- Potential future enhancement: Persist counter value in localStorage
+
+### Component Structure
+```
+/src
+└── app
+    ├── counter
+    │   └── page.tsx         # Counter page component
+└── components
+    └── ui
+        └── counter.tsx      # Reusable counter component
+```
+
+## 🗃️ Data Design
+### State Interface
+```typescript
+interface CounterState {
+  value: number;
+  increment: () => void;
+  decrement: () => void;
+  reset: () => void;
+}
+```
+
+## 🎨 UI/UX Design
+### Components
+1. **Counter Display**
+   - Use `<div>` with Tailwind styling
+   - Centered, large font
+   - Animated number transitions
+
+2. **Control Buttons**
+   - Use `shadcn/ui` Button component
+   - Variants:
+     - Increment: Primary
+     - Decrement: Destructive
+     - Reset: Secondary/Ghost
+
+### Responsive Considerations
+- Mobile-first design
+- Flexbox layout
+- Adaptive button sizes
+- Touch-friendly interaction targets
+
+## 📦 Implementation Phases
+
+### Phase 1: Component Creation
+- Create `/src/components/ui/counter.tsx`
+- Implement base counter logic
+- Add basic styling
+- Implement state management
+
+### Phase 2: Page Integration
+- Create `/src/app/counter/page.tsx`
+- Integrate Counter component
+- Add page-level metadata
+- Implement server/client split
+
+### Phase 3: Styling & Responsiveness
+- Apply Tailwind responsive classes
+- Implement dark/light mode compatibility
+- Add subtle animations
+- Ensure accessibility (ARIA labels)
+
+### Phase 4: Testing
+- Unit test counter logic
+- Snapshot testing for UI components
+- Accessibility compliance check
+- Cross-browser testing
+
+## 📁 File-by-File Guide
+
+### `/src/components/ui/counter.tsx`
+```typescript
+"use client"
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+
+export function Counter() {
+  const [count, setCount] = useState(0)
+
+  const increment = () => setCount(prev => prev + 1)
+  // Configurable decrement logic - defaults to preventing negative values
+const decrement = (allowNegative = false) =>
+  setCount(prev => allowNegative ? prev - 1 : Math.max(0, prev - 1))
+  const reset = () => setCount(0)
+
+  return (
+    <div className="flex flex-col items-center justify-center space-y-4">
+      <div className="text-6xl font-bold text-primary">
+        {count}
+      </div>
+      <div className="flex space-x-2">
+        <Button onClick={decrement} variant="destructive">-</Button>
+        <Button onClick={reset} variant="secondary">Reset</Button>
+        <Button onClick={increment} variant="default">+</Button>
+      </div>
+    </div>
+  )
+}
+```
+
+### `/src/app/counter/page.tsx`
+```typescript
+import { Metadata } from 'next'
+import { Counter } from '@/components/ui/counter'
+
+export const metadata: Metadata = {
+  title: 'Counter App',
+  description: 'Simple counter application'
+}
+
+export default function CounterPage() {
+  return (
+    <main className="container mx-auto py-12">
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+        <Counter />
+      </div>
+    </main>
+  )
+}
+```
+
+## 🧪 Verification Steps
+1. Run `npm run lint`
+2. Run `npm run typecheck`
+3. Manually test:
+   - Increment works correctly
+   - Decrement prevents negative values
+   - Reset returns to 0
+   - Responsive on different screen sizes
+   - Dark/light mode compatibility
+
+## 🔮 Future Enhancements
+- Add counter persistence via localStorage
+- Implement step-based increments
+- Add animations for state changes
+- Create multiple counter instances
+- Add configuration options (min/max values)
+
+## ⚠️ Potential Challenges
+- Ensuring zero is the minimum value
+- Responsive design across devices
+- Maintaining accessibility standards
+- Performance optimization for rapid clicks
+
+**Estimated Complexity:** 🔵 Low (1-2 hours)
+**Skills Required:** React, TypeScript, Tailwind CSS
+**Dependencies:** shadcn/ui, Next.js

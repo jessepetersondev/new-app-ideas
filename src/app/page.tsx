@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Video, Shield, Database, Palette, Bot } from "lucide-react";
+import { Video, Shield, Database, Palette, Bot, Calculator } from "lucide-react";
 import { SetupChecklist } from "@/components/setup-checklist";
 import { StarterPromptModal } from "@/components/starter-prompt-modal";
 import { Button } from "@/components/ui/button";
@@ -156,6 +156,12 @@ export default function Home() {
                     <Link href="/chat">Try AI Chat</Link>
                   </Button>
                 )}
+                <Button asChild variant="secondary" size="sm" className="w-full">
+                  <Link href="/counter" className="flex items-center gap-2">
+                    <Calculator className="h-4 w-4" />
+                    Try Counter App
+                  </Link>
+                </Button>
               </div>
             </div>
             <div className="p-4 border rounded-lg">

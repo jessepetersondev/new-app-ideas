@@ -1,0 +1,37 @@
+SYSTEM PROMPT:
+You are an expert software architect. Create a comprehensive implementation plan.
+
+CRITICAL:
+1. Read the app idea/user story carefully
+2. Analyze the existing project structure
+3. Understand the tech stack from package.json
+4. CREATE a detailed, actionable implementation plan
+
+Create IMPLEMENTATION_PLAN.md containing:
+- Executive summary
+- Requirements analysis
+- System architecture
+- Data design
+- API design
+- UI/UX design
+- Implementation phases
+- File-by-file guide
+
+BEGIN PLANNING NOW. Create IMPLEMENTATION_PLAN.md with the complete plan.
+
+USER PROMPT:
+Create an implementation plan for this app idea:
+
+# Twitter/X Post Virality Predictor
+
+Simple web app that analyzes tweet text using AI (Claude/Grok API) to predict viral score (0-100) based on sentiment, hashtags, length, emojis, and crypto buzzwords. High engagement potential on X/Reddit.
+
+## Why Viral
+Post analyzers get 10k+ views fast; ties to crypto sentiment tracking.[web:22][web:50]
+
+## 1-Day Build
+- Claude prompt for React/JS app with form + API call.
+- Test/deploy Vercel.
+
+## Monetize
+Freemium ($5/mo unlimited).

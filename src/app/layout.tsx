@@ -81,7 +81,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="overflow-x-hidden">
       <head>
         <script
           type="application/ld+json"
@@ -89,7 +89,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
       >
         <ThemeProvider
           attribute="class"
@@ -97,9 +97,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SiteHeader />
-          <main id="main-content">{children}</main>
-          <SiteFooter />
+          <div className="flex flex-col min-h-screen overflow-x-hidden">
+            <SiteHeader />
+            <main id="main-content" className="flex-1">{children}</main>
+            <SiteFooter />
+          </div>
           <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>

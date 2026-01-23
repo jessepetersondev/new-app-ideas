@@ -1,0 +1,114 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 17: Run Database Migration
+**Priority:** High
+**Estimate:** Small
+**Dependencies:** Story 1
+
+### Description
+Generate and run the database migration to create the new tables in the PostgreSQL database.
+
+### Acceptance Criteria
+- [ ] Migration file is generated with correct schema changes
+- [ ] Migration runs successfully against development database
+- [ ] Tables are created with correct columns and constraints
+- [ ] Indexes are created
+- [ ] Can query tables from application code
+
+### Implementation Notes
+- Run `pnpm db:generate` to create migration
+- Run `pnpm db:migrate` to apply migration
+- Verify with `pnpm db:studio` or psql
+
+### Files to Create/Modify
+- `drizzle/` - Migration files will be auto-generated
+
+---
+
+## Phase 1 MVP Story Summary
+
+| Story | Title | Priority | Size | Dependencies |
+|-------|-------|----------|------|--------------|
+| 1 | Database Schema | High | Small | None |
+| 2 | TypeScript Types | High | Small | None |
+| 3 | Usage API | High | Small | 1, 2 |
+| 4 | Prediction API | High | Large | 1, 2, 3 |
+| 5 | Install shadcn Components | High | Small | None |
+| 6 | Tweet Input Component | High | Medium | 5 |
+| 7 | Viral Score Gauge | High | Medium | 5 |
+| 8 | Factor Breakdown | High | Medium | 2, 5 |
+| 9 | Suggestions List | High | Small | 2 |
+| 10 | Usage Indicator | Medium | Small | 3 |
+| 11 | Prediction Result | High | Medium | 7, 8, 9 |
+| 12 | Predict Page | High | Medium | 4, 6, 10, 11 |
+| 13 | Landing Page | High | Medium | 6 |
+| 14 | Header Navigation | Medium | Small | 12, 13 |
+| 15 | Error Handling | Medium | Small | 4, 12 |
+| 16 | Mobile Polish | Medium | Small | 12, 13 |
+| 17 | Run Migration | High | Small | 1 |
+
+---
+
+## Recommended Implementation Order
+
+1. **Foundation (Parallel)**
+   - Story 1: Database Schema
+   - Story 2: TypeScript Types
+   - Story 5: Install shadcn Components
+
+2. **Run Migration**
+   - Story 17: Run Database Migration
+
+3. **Backend APIs**
+   - Story 3: Usage API
+   - Story 4: Prediction API
+
+4. **UI Components (Can be parallelized)**
+   - Story 6: Tweet Input
+   - Story 7: Viral Score Gauge
+   - Story 8: Factor Breakdown
+   - Story 9: Suggestions List
+   - Story 10: Usage Indicator
+
+5. **Integration**
+   - Story 11: Prediction Result Container
+   - Story 12: Predict Page
+   - Story 13: Landing Page
+
+6. **Polish**
+   - Story 14: Header Navigation
+   - Story 15: Error Handling
+   - Story 16: Mobile Responsiveness
+
+---
+
+## Future Stories (Phase 2+)
+
+These stories are not included in the MVP but are planned for future phases:
+
+- **Subscription Table & Stripe Integration** - Add subscription schema and Stripe payment flow
+- **Premium Tier Logic** - Implement unlimited predictions for premium users
+- **Pricing Page** - Full pricing comparison page with Stripe checkout
+- **Prediction History Page** - View past predictions (premium feature)
+- **Share to Twitter** - Direct sharing integration
+- **Tweet Comparison Tool** - Compare multiple tweet variants
+- **Analytics Dashboard** - Track prediction trends and insights
+
+---
+
+*Document created: January 2026*
+*Total MVP Stories: 17*
+*Estimated MVP Effort: 1 day intensive development*
+

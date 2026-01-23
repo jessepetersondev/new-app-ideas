@@ -1,0 +1,39 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 9: Suggestions List Component
+**Priority:** High
+**Estimate:** Small
+**Dependencies:** Story 2
+
+### Description
+Create a component that displays the AI-generated improvement suggestions as an actionable list.
+
+### Acceptance Criteria
+- [ ] Displays list of 3-5 suggestions
+- [ ] Each suggestion is clearly readable
+- [ ] Visual hierarchy with bullet points or numbers
+- [ ] Accepts suggestions array as prop
+- [ ] Works in both light and dark mode
+
+### Implementation Notes
+- Simple unordered or ordered list
+- Consider using Card component for container
+- Add lightbulb icon for visual interest
+
+### Files to Create/Modify
+- `src/components/predict/suggestions-list.tsx` - Create new component
+
+---
+

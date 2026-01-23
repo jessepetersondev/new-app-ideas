@@ -1,0 +1,39 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 10: Usage Indicator Component
+**Priority:** Medium
+**Estimate:** Small
+**Dependencies:** Story 3
+
+### Description
+Create a component that displays the user's remaining predictions for the day with visual feedback.
+
+### Acceptance Criteria
+- [ ] Shows remaining predictions count (e.g., "2 predictions remaining today")
+- [ ] Visual indicator when running low (1 remaining = warning style)
+- [ ] Shows upgrade prompt when at 0 remaining
+- [ ] Fetches data from /api/usage endpoint
+- [ ] Works in both light and dark mode
+
+### Implementation Notes
+- Use Badge component for display
+- Can be inline or standalone component
+- Consider refresh after each prediction
+
+### Files to Create/Modify
+- `src/components/predict/usage-indicator.tsx` - Create new component
+
+---
+

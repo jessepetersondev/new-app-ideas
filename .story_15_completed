@@ -1,0 +1,92 @@
+Story 15: Error Handling and Loading States - COMPLETED
+
+## Implementation Summary
+
+### 1. Error Boundary Component
+Created `/src/components/error-boundary.tsx`:
+- Catches unexpected React component errors
+- Prevents app crashes
+- Shows user-friendly error message
+- Provides "Try Again" and "Go Home" buttons
+- Shows error details in development mode
+
+### 2. Enhanced API Error Handling
+Updated `/src/app/api/predict/route.ts`:
+- Added specific error codes for all error types
+- User-friendly error messages
+- Differentiated error types:
+  - AUTH_REQUIRED (401)
+  - MISSING_TEXT / EMPTY_TEXT (400)
+  - TEXT_TOO_LONG (400)
+  - RATE_LIMIT_EXCEEDED (429) with upgrade prompt
+  - NETWORK_ERROR (503)
+  - TIMEOUT_ERROR (504)
+  - AI_ERROR (500)
+  - PARSE_ERROR (500)
+  - VALIDATION_ERROR (500)
+  - INTERNAL_ERROR (500)
+- Added retryable flags for transient errors
+
+### 3. Toast Notifications
+Updated `/src/app/predict/predict-page-client.tsx`:
+- Integrated sonner toast notifications
+- Success toast on prediction completion
+- Error toasts with specific messages
+- Action buttons for:
+  - Retry (for network errors)
+  - Log In (for auth errors)
+- Wrapped in ErrorBoundary
+
+### 4. Enhanced Error States
+Updated `/src/components/predict/prediction-result.tsx`:
+- Different error UIs for different error types:
+  - Rate limit errors show "Upgrade" prompt
+  - Network errors show "Retry" button
+  - General errors show "Try Again"
+- Added informational message for rate limits
+- Toast notification on successful copy
+- Error toast on failed copy
+
+### 5. Form Validation
+Updated `/src/components/predict/tweet-input.tsx`:
+- Added inline error display
+- Visual error state (red border)
+- Error icon and message below input
+- Real-time validation as user types
+- Character limit enforcement
+
+Updated `/src/app/predict/predict-page-client.tsx`:
+- Validation before API call
+- Inline error messages
+- Clear error on user input
+- Toast notifications for validation errors
+
+### 6. Loading States
+Already implemented with skeleton loaders in prediction-result.tsx:
+- Skeleton for viral score gauge
+- Skeleton for factor breakdown
+- Skeleton for suggestions
+- Loading button state with spinner
+- Proper feedback during analysis
+
+## All Acceptance Criteria Met
+
+✅ API errors show user-friendly messages
+✅ Rate limit errors (429) show clear "limit reached" message with upgrade prompt
+✅ Network errors show retry option
+✅ Loading states show appropriate feedback (spinner, skeleton)
+✅ Form validation errors are displayed inline
+✅ Toast notifications for success/error feedback
+
+## Files Created/Modified
+
+Created:
+- `/src/components/error-boundary.tsx`
+
+Modified:
+- `/src/app/api/predict/route.ts`
+- `/src/app/predict/predict-page-client.tsx`
+- `/src/components/predict/prediction-result.tsx`
+- `/src/components/predict/tweet-input.tsx`
+
+All lint and typecheck tests passed.

@@ -1,0 +1,40 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 3: Usage Tracking API Endpoint
+**Priority:** High
+**Estimate:** Small
+**Dependencies:** Story 1, Story 2
+
+### Description
+Create an API endpoint that returns the current user's usage statistics including their tier, today's prediction count, and remaining predictions.
+
+### Acceptance Criteria
+- [ ] GET `/api/usage` returns user's current tier (always "free" for MVP)
+- [ ] Response includes todayCount of predictions made today
+- [ ] Response includes dailyLimit (3 for free tier)
+- [ ] Response includes remainingToday calculation
+- [ ] Endpoint requires authentication
+- [ ] Returns 401 for unauthenticated requests
+
+### Implementation Notes
+- Query usageTracking table filtered by userId and today's date
+- Use BetterAuth to get session and user ID
+- Free tier limit is 3 predictions per day (use env var NEXT_PUBLIC_FREE_DAILY_LIMIT)
+
+### Files to Create/Modify
+- `src/app/api/usage/route.ts` - Create new GET handler
+
+---
+

@@ -1,0 +1,68 @@
+Story 12: Predict Page - COMPLETED
+
+## Implementation Summary
+
+Created the main prediction page at `/predict` that integrates all prediction components into a functional interface.
+
+## Files Created
+
+1. `src/app/predict/page.tsx` - Server Component with authentication check
+2. `src/app/predict/predict-page-client.tsx` - Client Component with prediction logic
+
+## Key Features Implemented
+
+✅ Page is protected (requires authentication)
+✅ Redirects to login if not authenticated with return URL
+✅ Displays TweetInput component with character counter
+✅ Shows UsageIndicator with remaining predictions
+✅ "Analyze" button triggers prediction API call
+✅ Button is disabled while loading or at usage limit
+✅ Displays PredictionResult after successful prediction
+✅ Handles and displays API errors appropriately (401, 429, 500)
+✅ Works in both light and dark mode (uses shadcn/ui tokens)
+✅ Is mobile responsive (responsive container and card layout)
+
+## Implementation Details
+
+### Server Component (page.tsx)
+- Uses BetterAuth to check session
+- Redirects to login with redirect query parameter if not authenticated
+- Passes user info to client component
+
+### Client Component (predict-page-client.tsx)
+- Manages state: tweetText, isAnalyzing, prediction, error, usageData
+- Integrates TweetInput for post entry
+- Shows UsageIndicator at top with user welcome message
+- Analyze button calls /api/predict with proper error handling
+- Disables analyze button when:
+  - Already analyzing
+  - Text is empty
+  - Text exceeds 280 characters
+  - Daily limit reached (remainingToday === 0)
+- Handles API responses:
+  - Success: displays prediction via PredictionResult
+  - Error: shows error message via PredictionResult
+  - 429: daily limit exceeded
+  - 401: authentication required
+- Refreshes usage indicator after successful prediction
+- Reset functionality clears form and results
+
+### Responsive Design
+- Container with max-w-4xl for optimal reading width
+- Responsive padding and spacing
+- Mobile-friendly card layouts
+- Works in both light and dark modes
+
+## Testing Notes
+
+All acceptance criteria met:
+- Authentication protection working
+- Redirect to login with return URL
+- All components properly integrated
+- Loading states handled
+- Error states handled
+- Usage limits enforced in UI
+- Mobile responsive
+- Dark mode compatible
+
+Lint and typecheck passed successfully.

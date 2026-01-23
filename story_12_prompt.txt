@@ -1,0 +1,45 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 12: Predict Page
+**Priority:** High
+**Estimate:** Medium
+**Dependencies:** Story 4, Story 6, Story 10, Story 11
+
+### Description
+Create the main prediction page that integrates all prediction components into a functional interface with authentication protection.
+
+### Acceptance Criteria
+- [ ] Page is protected (requires authentication)
+- [ ] Redirects to login if not authenticated
+- [ ] Displays TweetInput component
+- [ ] Shows UsageIndicator with remaining predictions
+- [ ] "Analyze" button triggers prediction API call
+- [ ] Button is disabled while loading or at usage limit
+- [ ] Displays PredictionResult after successful prediction
+- [ ] Handles and displays API errors appropriately
+- [ ] Works in both light and dark mode
+- [ ] Is mobile responsive
+
+### Implementation Notes
+- Use Server Component for auth check, Client Component for interactivity
+- Manage prediction state with useState
+- Use fetch or a library like SWR for API calls
+- Consider adding URL state for sharing predictions (future)
+
+### Files to Create/Modify
+- `src/app/predict/page.tsx` - Create new page
+
+---
+

@@ -1,0 +1,41 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 11: Prediction Result Container
+**Priority:** High
+**Estimate:** Medium
+**Dependencies:** Story 7, Story 8, Story 9
+
+### Description
+Create a container component that combines the viral score gauge, factor breakdown, and suggestions into a cohesive results display with loading and error states.
+
+### Acceptance Criteria
+- [ ] Combines ViralScoreGauge, FactorBreakdown, and SuggestionsList
+- [ ] Shows loading skeleton while prediction is processing
+- [ ] Shows error state with retry option if prediction fails
+- [ ] Shows empty state when no prediction yet
+- [ ] Includes "Copy Results" button
+- [ ] Includes "Try Another" button to reset
+- [ ] Works in both light and dark mode
+
+### Implementation Notes
+- Accept prediction, isLoading, error, and onReset props
+- Use Skeleton component for loading state
+- Copy button should copy formatted text summary
+
+### Files to Create/Modify
+- `src/components/predict/prediction-result.tsx` - Create new component
+
+---
+

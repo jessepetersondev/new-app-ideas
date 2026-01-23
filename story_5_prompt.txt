@@ -1,0 +1,38 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 5: Install Required shadcn/ui Components
+**Priority:** High
+**Estimate:** Small
+**Dependencies:** None
+
+### Description
+Install the shadcn/ui progress component and any other required UI primitives needed for the prediction interface.
+
+### Acceptance Criteria
+- [ ] Progress component is installed and available
+- [ ] Textarea component is available (verify or install)
+- [ ] All components work in both light and dark mode
+
+### Implementation Notes
+- Run `npx shadcn@latest add progress`
+- Verify textarea component exists or install it
+- Test components render correctly
+
+### Files to Create/Modify
+- `src/components/ui/progress.tsx` - Will be created by shadcn CLI
+- `src/components/ui/textarea.tsx` - Verify exists or create via CLI
+
+---
+

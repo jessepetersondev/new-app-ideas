@@ -80,3 +80,54 @@ export const verification = pgTable("verification", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+export const usageTracking = pgTable(
+  "usage_tracking",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    date: timestamp("date").notNull(),
+    predictionCount: text("prediction_count").notNull().default("0"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("usage_tracking_user_id_idx").on(table.userId),
+    index("usage_tracking_date_idx").on(table.date),
+    index("usage_tracking_user_date_idx").on(table.userId, table.date),
+  ]
+);
+
+export const predictions = pgTable(
+  "predictions",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    tweetText: text("tweet_text").notNull(),
+    viralityScore: text("virality_score").notNull(),
+    confidence: text("confidence").notNull(),
+    sentiment: text("sentiment").notNull(),
+    sentimentScore: text("sentiment_score").notNull(),
+    hashtagCount: text("hashtag_count").notNull(),
+    hashtagTrending: boolean("hashtag_trending").notNull(),
+    lengthCharacters: text("length_characters").notNull(),
+    lengthOptimal: boolean("length_optimal").notNull(),
+    emojiCount: text("emoji_count").notNull(),
+    emojiImpact: text("emoji_impact").notNull(),
+    buzzwordCount: text("buzzword_count").notNull(),
+    buzzwords: text("buzzwords").notNull(),
+    suggestions: text("suggestions").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("predictions_user_id_idx").on(table.userId),
+    index("predictions_created_at_idx").on(table.createdAt),
+  ]
+);

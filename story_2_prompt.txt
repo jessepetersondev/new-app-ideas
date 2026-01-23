@@ -1,0 +1,39 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 2: TypeScript Type Definitions
+**Priority:** High
+**Estimate:** Small
+**Dependencies:** None
+
+### Description
+Create TypeScript interfaces for the virality prediction system including the prediction response structure, API request/response types, and usage statistics.
+
+### Acceptance Criteria
+- [ ] `ViralityPrediction` interface defines complete prediction structure
+- [ ] `PredictionRequest` interface defines API input
+- [ ] `PredictionResponse` interface defines API output
+- [ ] `UsageStats` interface defines usage tracking data
+- [ ] All factor sub-types (sentiment, hashtags, length, emojis, buzzwords) are properly typed
+
+### Implementation Notes
+- Create new types directory if it doesn't exist
+- Use discriminated unions for sentiment label (positive/negative/neutral)
+- Make suggestion array typed as `string[]`
+
+### Files to Create/Modify
+- `src/types/prediction.ts` - Create new file with all prediction-related types
+
+---
+

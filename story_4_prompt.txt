@@ -1,0 +1,46 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 4: Prediction API Endpoint - Core Logic
+**Priority:** High
+**Estimate:** Large
+**Dependencies:** Story 1, Story 2, Story 3
+
+### Description
+Create the main prediction API endpoint that accepts tweet text, calls OpenRouter AI for analysis, validates usage limits, saves results to database, and returns the virality prediction.
+
+### Acceptance Criteria
+- [ ] POST `/api/predict` accepts tweetText in request body
+- [ ] Validates tweet text is not empty and under 500 characters
+- [ ] Checks user's daily usage limit before processing
+- [ ] Returns 429 (Too Many Requests) if daily limit exceeded
+- [ ] Calls OpenRouter API with structured virality analysis prompt
+- [ ] Parses AI response as JSON and validates structure
+- [ ] Saves prediction to database
+- [ ] Increments daily usage count
+- [ ] Returns prediction with remainingPredictions count
+- [ ] Endpoint requires authentication
+
+### Implementation Notes
+- Use OpenRouter with `@openrouter/ai-sdk-provider`
+- Implement the detailed VIRALITY_PROMPT from the plan
+- Handle AI response parsing errors gracefully
+- Use transaction for saving prediction and updating usage count
+- Return structured error responses with appropriate status codes
+
+### Files to Create/Modify
+- `src/app/api/predict/route.ts` - Create new POST handler
+
+---
+

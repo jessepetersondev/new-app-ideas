@@ -1,0 +1,40 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 14: Site Header Navigation Update
+**Priority:** Medium
+**Estimate:** Small
+**Dependencies:** Story 12, Story 13
+
+### Description
+Update the site header to include navigation links for the new pages and update branding.
+
+### Acceptance Criteria
+- [ ] Logo/brand name updated to "Virality Predictor" or similar
+- [ ] Navigation includes: Home, Predict, Pricing links
+- [ ] Predict link only visible when authenticated
+- [ ] Active link is highlighted
+- [ ] Mobile navigation works correctly
+- [ ] Auth components (login/logout) remain functional
+
+### Implementation Notes
+- Modify existing site-header.tsx
+- Use Next.js Link component for navigation
+- Consider using usePathname for active state
+
+### Files to Create/Modify
+- `src/components/site-header.tsx` - Modify existing header
+
+---
+

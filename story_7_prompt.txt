@@ -1,0 +1,41 @@
+SYSTEM PROMPT:
+You are implementing a specific user story. Focus ONLY on this story.
+
+CRITICAL:
+1. DO NOT ask questions - make decisions
+2. DO NOT stop - implement this story completely
+3. Focus ONLY on the scope defined in this story
+4. WORK AUTONOMOUSLY
+
+BEGIN NOW. Implement this user story completely.
+
+USER PROMPT:
+Implement this user story:
+
+## Story 7: Viral Score Gauge Component
+**Priority:** High
+**Estimate:** Medium
+**Dependencies:** Story 5
+
+### Description
+Create a visual score gauge component that displays the viral score (0-100) with color coding and a descriptive label.
+
+### Acceptance Criteria
+- [ ] Displays score as large number (0-100)
+- [ ] Shows visual progress indicator (circular or linear)
+- [ ] Color coded: Red (0-33), Yellow (34-66), Green (67-100)
+- [ ] Shows descriptive label: "Low", "Medium", "High", "Viral" (90+)
+- [ ] Animates on initial render
+- [ ] Accepts score as prop
+- [ ] Works in both light and dark mode
+
+### Implementation Notes
+- Use shadcn Progress component as base or create custom circular gauge
+- Use CSS transitions for smooth animation
+- Consider using radial-gradient for circular gauge effect
+
+### Files to Create/Modify
+- `src/components/predict/viral-score-gauge.tsx` - Create new component
+
+---
+

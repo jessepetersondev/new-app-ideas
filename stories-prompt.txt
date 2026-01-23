@@ -1,0 +1,769 @@
+SYSTEM PROMPT:
+You are an expert at breaking down implementation plans into executable user stories.
+
+CRITICAL:
+1. Read the IMPLEMENTATION_PLAN.md carefully
+2. Break it down into discrete, executable user stories
+3. Each story should be independently implementable
+4. Stories should be ordered by dependency (implement foundations first)
+
+Create USER_STORIES.md with the following format for EACH story:
+
+## Story 1: [Short Title]
+**Priority:** [High/Medium/Low]
+**Estimate:** [Small/Medium/Large]
+**Dependencies:** [None or list story numbers]
+
+### Description
+[2-3 sentence description of what this story accomplishes]
+
+### Acceptance Criteria
+- [ ] [Specific, testable criterion]
+- [ ] [Another criterion]
+
+### Implementation Notes
+[Key technical details for implementing this story]
+
+### Files to Create/Modify
+- `path/to/file.ts` - [what to do]
+
+---
+
+Create 5-15 user stories that together implement the full plan. BEGIN NOW.
+
+USER PROMPT:
+Break down this implementation plan into user stories:
+
+# Twitter/X Post Virality Predictor - Implementation Plan
+
+## Executive Summary
+
+Build a web application that analyzes tweet/post text using AI to predict viral potential with a score (0-100). The app will evaluate content based on sentiment, hashtags, character length, emoji usage, and crypto/trending buzzwords. Built on the existing Next.js 16 boilerplate with OpenRouter AI integration.
+
+**Target**: 1-day MVP build with freemium monetization ($5/mo unlimited predictions)
+
+---
+
+## Requirements Analysis
+
+### Functional Requirements
+
+1. **Tweet Analysis Form**
+   - Text input (max 280 characters for X/Twitter compliance)
+   - Character counter with visual feedback
+   - Submit button with loading state
+
+2. **AI-Powered Virality Prediction**
+   - Viral score: 0-100 numeric rating
+   - Breakdown by factor:
+     - Sentiment analysis (positive/negative/neutral)
+     - Hashtag effectiveness (count, relevance, trending potential)
+     - Optimal length assessment
+     - Emoji impact analysis
+     - Crypto/trending buzzword detection
+   - Improvement suggestions
+
+3. **Results Display**
+   - Visual score gauge/meter
+   - Factor-by-factor breakdown with scores
+   - Actionable recommendations
+   - Share/copy functionality
+
+4. **User Management**
+   - Free tier: 3 predictions per day
+   - Premium tier: Unlimited predictions ($5/mo)
+   - Usage tracking per user
+
+5. **History & Analytics** (Phase 2)
+   - Save past predictions
+   - Track prediction accuracy (optional viral feedback)
+
+### Non-Functional Requirements
+
+- Response time: < 3 seconds for prediction
+- Mobile-responsive design
+- Accessible (WCAG 2.1 AA)
+- Dark/light mode support (already available)
+
+---
+
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                         Frontend                                 │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
+│  │  Landing     │  │  Predictor   │  │  History/Dashboard   │  │
+│  │  Page        │  │  Page        │  │  (Premium)           │  │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                         API Layer                                │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
+│  │  /api/       │  │  /api/       │  │  /api/               │  │
+│  │  predict     │  │  history     │  │  usage               │  │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘  │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+┌──────────────────┐ ┌──────────────┐ ┌──────────────────────┐
+│  OpenRouter AI   │ │  PostgreSQL  │ │  BetterAuth          │
+│  (GPT-5-mini)    │ │  Database    │ │  Authentication      │
+└──────────────────┘ └──────────────┘ └──────────────────────┘
+```
+
+---
+
+## Data Design
+
+### Database Schema Extensions
+
+Add to `src/lib/schema.ts`:
+
+```typescript
+// Prediction history table
+export const prediction = pgTable(
+  "prediction",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    tweetText: text("tweet_text").notNull(),
+    viralScore: integer("viral_score").notNull(),
+    sentimentScore: integer("sentiment_score").notNull(),
+    hashtagScore: integer("hashtag_score").notNull(),
+    lengthScore: integer("length_score").notNull(),
+    emojiScore: integer("emoji_score").notNull(),
+    buzzwordScore: integer("buzzword_score").notNull(),
+    suggestions: text("suggestions").notNull(), // JSON array
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("prediction_user_id_idx").on(table.userId),
+    index("prediction_created_at_idx").on(table.createdAt),
+  ]
+);
+
+// Daily usage tracking table
+export const usageTracking = pgTable(
+  "usage_tracking",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    date: timestamp("date").notNull(), // Truncated to day
+    predictionsCount: integer("predictions_count").default(0).notNull(),
+  },
+  (table) => [
+    index("usage_user_date_idx").on(table.userId, table.date),
+  ]
+);
+
+// Premium subscriptions table
+export const subscription = pgTable(
+  "subscription",
+  {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .unique()
+      .references(() => user.id, { onDelete: "cascade" }),
+    tier: text("tier").notNull().default("free"), // "free" | "premium"
+    stripeCustomerId: text("stripe_customer_id"),
+    stripeSubscriptionId: text("stripe_subscription_id"),
+    currentPeriodEnd: timestamp("current_period_end"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [index("subscription_user_id_idx").on(table.userId)]
+);
+```
+
+### TypeScript Types
+
+```typescript
+// src/types/prediction.ts
+export interface ViralityPrediction {
+  viralScore: number;           // 0-100
+  sentiment: {
+    score: number;              // 0-100
+    label: "positive" | "negative" | "neutral";
+    explanation: string;
+  };
+  hashtags: {
+    score: number;              // 0-100
+    count: number;
+    analysis: string;
+  };
+  length: {
+    score: number;              // 0-100
+    characterCount: number;
+    optimalRange: boolean;
+  };
+  emojis: {
+    score: number;              // 0-100
+    count: number;
+    effectiveness: string;
+  };
+  buzzwords: {
+    score: number;              // 0-100
+    detected: string[];
+    impact: string;
+  };
+  suggestions: string[];
+  overallAnalysis: string;
+}
+
+export interface PredictionRequest {
+  tweetText: string;
+}
+
+export interface PredictionResponse {
+  success: boolean;
+  prediction?: ViralityPrediction;
+  error?: string;
+  remainingPredictions?: number;
+}
+```
+
+---
+
+## API Design
+
+### POST /api/predict
+
+**Purpose**: Analyze tweet text and return virality prediction
+
+**Request**:
+```typescript
+{
+  tweetText: string; // max 500 chars (allow longer for analysis)
+}
+```
+
+**Response**:
+```typescript
+{
+  success: boolean;
+  prediction: ViralityPrediction;
+  remainingPredictions: number; // For free tier users
+}
+```
+
+**AI Prompt Strategy**:
+```
+You are a social media virality expert. Analyze the following tweet/post and provide a detailed virality prediction.
+
+Tweet: "{tweetText}"
+
+Evaluate based on:
+1. SENTIMENT (0-100): Emotional impact and tone
+2. HASHTAGS (0-100): Relevance, trending potential, optimal count (2-3)
+3. LENGTH (0-100): Optimal is 70-100 chars for engagement
+4. EMOJIS (0-100): Strategic emoji usage (1-3 is optimal)
+5. BUZZWORDS (0-100): Trending topics, crypto terms, viral phrases
+
+Return a JSON response with this exact structure:
+{
+  "viralScore": <weighted average 0-100>,
+  "sentiment": { "score": <0-100>, "label": "<positive|negative|neutral>", "explanation": "<brief>" },
+  "hashtags": { "score": <0-100>, "count": <number>, "analysis": "<brief>" },
+  "length": { "score": <0-100>, "characterCount": <number>, "optimalRange": <boolean> },
+  "emojis": { "score": <0-100>, "count": <number>, "effectiveness": "<brief>" },
+  "buzzwords": { "score": <0-100>, "detected": [<strings>], "impact": "<brief>" },
+  "suggestions": [<3-5 actionable improvement tips>],
+  "overallAnalysis": "<2-3 sentence summary>"
+}
+```
+
+### GET /api/usage
+
+**Purpose**: Get current user's usage stats and remaining predictions
+
+**Response**:
+```typescript
+{
+  tier: "free" | "premium";
+  todayCount: number;
+  dailyLimit: number; // 3 for free, Infinity for premium
+  remainingToday: number;
+}
+```
+
+### GET /api/history
+
+**Purpose**: Get user's prediction history (premium feature)
+
+**Response**:
+```typescript
+{
+  predictions: Array<{
+    id: string;
+    tweetText: string;
+    viralScore: number;
+    createdAt: string;
+  }>;
+  total: number;
+}
+```
+
+---
+
+## UI/UX Design
+
+### Page Structure
+
+#### 1. Landing Page (`src/app/page.tsx`) - Redesign
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ [Logo] Virality Predictor              [Login] [Get Started]│
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│              🔥 Predict Your Tweet's Virality               │
+│                                                             │
+│     AI-powered analysis to maximize your social reach       │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Enter your tweet...                            0/280 │   │
+│  │                                                      │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                     [🔮 Predict Virality]                   │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│                    How It Works                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │ 📝 Write │  │ 🤖 AI    │  │ 📊 Score │  │ 🚀 Post  │   │
+│  │ Tweet    │  │ Analyzes │  │ & Tips   │  │ Better   │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+├─────────────────────────────────────────────────────────────┤
+│                    Pricing                                  │
+│  ┌────────────────────┐  ┌────────────────────┐            │
+│  │ FREE               │  │ PREMIUM $5/mo      │            │
+│  │ 3 predictions/day  │  │ Unlimited          │            │
+│  │                    │  │ + History          │            │
+│  │ [Start Free]       │  │ [Upgrade]          │            │
+│  └────────────────────┘  └────────────────────┘            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### 2. Predictor Page (`src/app/predict/page.tsx`)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   Tweet Virality Analyzer                   │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │                                                      │   │
+│  │ [Tweet text input area]                      250/280 │   │
+│  │                                                      │   │
+│  └─────────────────────────────────────────────────────┘   │
+│        [🔮 Analyze] (2 predictions remaining today)        │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│    ┌─────────────────────────────────────────────────┐     │
+│    │               VIRAL SCORE                        │     │
+│    │          ┌─────────────────┐                    │     │
+│    │          │       78        │                    │     │
+│    │          │   ████████░░    │                    │     │
+│    │          │   HIGH POTENTIAL│                    │     │
+│    │          └─────────────────┘                    │     │
+│    └─────────────────────────────────────────────────┘     │
+│                                                             │
+│    ┌─────────────────────────────────────────────────┐     │
+│    │ 😊 Sentiment     ████████░░  82  Positive      │     │
+│    │ #️⃣ Hashtags      ██████░░░░  65  Good          │     │
+│    │ 📏 Length        █████████░  90  Optimal       │     │
+│    │ 🎯 Emojis        ███████░░░  72  Effective     │     │
+│    │ 🔥 Buzzwords     ████░░░░░░  45  Low           │     │
+│    └─────────────────────────────────────────────────┘     │
+│                                                             │
+│    ┌─────────────────────────────────────────────────┐     │
+│    │ 💡 Suggestions                                   │     │
+│    │ • Add 1-2 trending hashtags like #crypto #defi  │     │
+│    │ • Consider adding a question to boost engagement│     │
+│    │ • Add an emoji to increase visual appeal        │     │
+│    └─────────────────────────────────────────────────┘     │
+│                                                             │
+│              [📋 Copy] [🔄 Try Another]                     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Component Hierarchy
+
+```
+src/components/
+├── predict/
+│   ├── tweet-input.tsx          # Text input with char counter
+│   ├── viral-score-gauge.tsx    # Circular/linear score display
+│   ├── factor-breakdown.tsx     # Individual factor scores
+│   ├── suggestions-list.tsx     # Improvement tips
+│   ├── prediction-result.tsx    # Full results container
+│   └── usage-indicator.tsx      # Remaining predictions badge
+├── pricing/
+│   ├── pricing-card.tsx         # Individual pricing tier
+│   └── pricing-section.tsx      # Full pricing comparison
+└── history/
+    └── prediction-history.tsx   # Past predictions list
+```
+
+---
+
+## Implementation Phases
+
+### Phase 1: Core MVP (Day 1 - Primary Focus)
+
+#### Step 1.1: Database Schema
+- [ ] Add `prediction` table to schema
+- [ ] Add `usageTracking` table to schema
+- [ ] Run migrations
+
+#### Step 1.2: API Endpoints
+- [ ] Create `/api/predict/route.ts`
+- [ ] Implement AI prompt for virality analysis
+- [ ] Add usage tracking logic
+
+#### Step 1.3: UI Components
+- [ ] Create `TweetInput` component
+- [ ] Create `ViralScoreGauge` component
+- [ ] Create `FactorBreakdown` component
+- [ ] Create `SuggestionsList` component
+- [ ] Create `PredictionResult` container
+
+#### Step 1.4: Pages
+- [ ] Redesign landing page with predictor hero
+- [ ] Create `/predict` page
+- [ ] Add navigation updates
+
+#### Step 1.5: Polish & Deploy
+- [ ] Add loading states
+- [ ] Add error handling
+- [ ] Test on mobile
+- [ ] Deploy to Vercel
+
+### Phase 2: Monetization (Day 2-3)
+
+- [ ] Integrate Stripe for payments
+- [ ] Add subscription management
+- [ ] Implement premium features
+- [ ] Create pricing page
+
+### Phase 3: Engagement Features (Week 2)
+
+- [ ] Prediction history (premium)
+- [ ] Share to Twitter integration
+- [ ] Tweet comparison tool
+- [ ] Analytics dashboard
+
+---
+
+## File-by-File Implementation Guide
+
+### 1. Database Schema Update
+
+**File**: `src/lib/schema.ts`
+
+**Changes**:
+- Add `prediction` table with columns: id, userId, tweetText, viralScore, sentimentScore, hashtagScore, lengthScore, emojiScore, buzzwordScore, suggestions, createdAt
+- Add `usageTracking` table with columns: id, userId, date, predictionsCount
+- Add indexes for efficient querying
+
+### 2. Types Definition
+
+**File**: `src/types/prediction.ts` (NEW)
+
+**Contents**:
+- `ViralityPrediction` interface
+- `FactorScore` interface
+- `PredictionRequest` interface
+- `PredictionResponse` interface
+- `UsageStats` interface
+
+### 3. Prediction API Route
+
+**File**: `src/app/api/predict/route.ts` (NEW)
+
+**Implementation**:
+```typescript
+// Key logic:
+// 1. Authenticate user via BetterAuth
+// 2. Check daily usage limits (3/day for free)
+// 3. Validate tweet text input
+// 4. Call OpenRouter with structured prompt
+// 5. Parse AI response as JSON
+// 6. Save prediction to database
+// 7. Update usage tracking
+// 8. Return prediction with remaining count
+```
+
+### 4. Usage API Route
+
+**File**: `src/app/api/usage/route.ts` (NEW)
+
+**Implementation**:
+- GET handler to return current usage stats
+- Calculate remaining predictions for the day
+
+### 5. Tweet Input Component
+
+**File**: `src/components/predict/tweet-input.tsx` (NEW)
+
+**Features**:
+- Textarea with 280 char limit
+- Real-time character counter
+- Visual warning at 250+ chars
+- Emoji picker integration (optional)
+- Clear button
+
+### 6. Viral Score Gauge Component
+
+**File**: `src/components/predict/viral-score-gauge.tsx` (NEW)
+
+**Features**:
+- Circular progress indicator (0-100)
+- Color coding: Red (0-33), Yellow (34-66), Green (67-100)
+- Score label: "Low", "Medium", "High", "Viral"
+- Animated fill on load
+
+### 7. Factor Breakdown Component
+
+**File**: `src/components/predict/factor-breakdown.tsx` (NEW)
+
+**Features**:
+- List of 5 factors with progress bars
+- Icon for each factor
+- Score number and label
+- Expandable details (optional)
+
+### 8. Suggestions List Component
+
+**File**: `src/components/predict/suggestions-list.tsx` (NEW)
+
+**Features**:
+- Numbered list of improvements
+- Copy individual suggestion
+- Highlight high-impact suggestions
+
+### 9. Prediction Result Container
+
+**File**: `src/components/predict/prediction-result.tsx` (NEW)
+
+**Features**:
+- Combines all result components
+- Loading skeleton state
+- Error state handling
+- Share/copy actions
+
+### 10. Landing Page Redesign
+
+**File**: `src/app/page.tsx`
+
+**Changes**:
+- Replace boilerplate content
+- Add hero section with embedded predictor
+- Add "How It Works" section
+- Add pricing teaser
+- Add social proof section (future)
+
+### 11. Predict Page
+
+**File**: `src/app/predict/page.tsx` (NEW)
+
+**Features**:
+- Full prediction interface
+- Protected route (requires auth)
+- Usage indicator
+- Results display
+
+### 12. Site Header Update
+
+**File**: `src/components/site-header.tsx`
+
+**Changes**:
+- Update logo/branding
+- Add navigation links: Home, Predict, Pricing
+- Keep auth components
+
+### 13. Progress Component
+
+**File**: `src/components/ui/progress.tsx` (NEW via shadcn)
+
+**Usage**: Install via `npx shadcn@latest add progress`
+
+---
+
+## AI Prompt Engineering
+
+### Primary Prediction Prompt
+
+```typescript
+const VIRALITY_PROMPT = `You are a social media virality expert specializing in Twitter/X content analysis.
+
+Analyze the following tweet and provide a comprehensive virality prediction:
+
+TWEET TEXT:
+"""
+{tweetText}
+"""
+
+EVALUATION CRITERIA:
+
+1. SENTIMENT (Weight: 20%)
+- Positive/inspiring content typically performs better
+- Controversy can drive engagement but risks backlash
+- Authenticity matters
+
+2. HASHTAGS (Weight: 15%)
+- Optimal: 2-3 relevant hashtags
+- Trending hashtags boost visibility
+- Avoid hashtag spam
+
+3. LENGTH (Weight: 20%)
+- Optimal range: 70-100 characters
+- Short, punchy posts perform well
+- Leave room for retweets with comments
+
+4. EMOJIS (Weight: 15%)
+- 1-3 strategic emojis increase engagement
+- Should complement, not replace text
+- Fire 🔥, rocket 🚀, eyes 👀 perform well
+
+5. BUZZWORDS (Weight: 30%)
+- Crypto terms: Bitcoin, ETH, NFT, DeFi, Web3
+- Tech trends: AI, GPT, automation
+- Viral phrases: "Thread 🧵", "Here's what I learned"
+- Questions and calls-to-action
+
+RESPOND WITH ONLY VALID JSON (no markdown, no code blocks):
+{
+  "viralScore": <number 0-100>,
+  "sentiment": {
+    "score": <number 0-100>,
+    "label": "<positive|negative|neutral>",
+    "explanation": "<1 sentence>"
+  },
+  "hashtags": {
+    "score": <number 0-100>,
+    "count": <number found>,
+    "analysis": "<1 sentence>"
+  },
+  "length": {
+    "score": <number 0-100>,
+    "characterCount": <exact count>,
+    "optimalRange": <boolean>
+  },
+  "emojis": {
+    "score": <number 0-100>,
+    "count": <number found>,
+    "effectiveness": "<1 sentence>"
+  },
+  "buzzwords": {
+    "score": <number 0-100>,
+    "detected": ["<word1>", "<word2>"],
+    "impact": "<1 sentence>"
+  },
+  "suggestions": [
+    "<specific actionable tip 1>",
+    "<specific actionable tip 2>",
+    "<specific actionable tip 3>"
+  ],
+  "overallAnalysis": "<2-3 sentence summary of viral potential>"
+}`;
+```
+
+---
+
+## Environment Variables
+
+Add to `.env.local`:
+
+```env
+# Existing
+POSTGRES_URL=...
+BETTER_AUTH_SECRET=...
+OPENROUTER_API_KEY=...
+OPENROUTER_MODEL=openai/gpt-5-mini  # or anthropic/claude-3.5-sonnet
+
+# New (Phase 2 - Payments)
+STRIPE_SECRET_KEY=...
+STRIPE_WEBHOOK_SECRET=...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=...
+
+# App Config
+NEXT_PUBLIC_FREE_DAILY_LIMIT=3
+```
+
+---
+
+## Testing Checklist
+
+### Unit Tests
+- [ ] Prediction API validates input correctly
+- [ ] Usage tracking increments properly
+- [ ] AI response parsing handles edge cases
+
+### Integration Tests
+- [ ] End-to-end prediction flow
+- [ ] Authentication required for predictions
+- [ ] Rate limiting enforced
+
+### Manual Testing
+- [ ] Mobile responsiveness
+- [ ] Dark mode appearance
+- [ ] Loading states
+- [ ] Error states
+- [ ] Empty state (no predictions yet)
+
+---
+
+## Deployment Checklist
+
+1. [ ] Set all environment variables in Vercel
+2. [ ] Run database migrations
+3. [ ] Test OpenRouter API connectivity
+4. [ ] Verify authentication flow
+5. [ ] Test prediction with sample tweets
+6. [ ] Check mobile responsiveness
+7. [ ] Monitor error rates post-launch
+
+---
+
+## Success Metrics
+
+- **Technical**: API response time < 3s, error rate < 1%
+- **Engagement**: DAU, predictions per user, return rate
+- **Monetization**: Free-to-paid conversion rate, MRR
+
+---
+
+## Appendix: Sample Tweets for Testing
+
+**High Viral Potential**:
+```
+🚀 Just discovered the secret to 10x productivity
+
+Here's what 99% of people get wrong (Thread 🧵) #AI #productivity
+```
+
+**Medium Potential**:
+```
+Working on something new today. Excited to share soon! #building
+```
+
+**Low Potential**:
+```
+had coffee this morning
+```
+
+---
+
+*Plan created: January 2026*
+*Tech Stack: Next.js 16, React 19, OpenRouter AI, PostgreSQL, Drizzle ORM, shadcn/ui*
